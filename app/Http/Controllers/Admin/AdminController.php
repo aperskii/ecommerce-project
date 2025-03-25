@@ -13,10 +13,10 @@ class AdminController extends Controller
     // Fetch and display today yesterday this month this year orders
     public function index(){
         // get today orders
-        $todayOrders = Order::whereDay('created_at', Carbon::today())->get();
-        $yesterdayOrders = Order::whereDay('created_at', Carbon::yesterday())->get();
-        $monthOrders = Order::whereMonth('created_at', Carbon::now()->month)->get();
-        $yearOrders = Order::whereYear('created_at', Carbon::now()->year)->get();
+        $todayOrders = Order::query()->whereDay('created_at', Carbon::today())->get();
+        $yesterdayOrders = Order::query()->whereDay('created_at', Carbon::yesterday())->get();
+        $monthOrders = Order::query()->whereMonth('created_at', Carbon::now()->month)->get();
+        $yearOrders = Order::query()->whereYear('created_at', Carbon::now()->year)->get();
 
         return view('admin.index')->with([
             'todayOrders' => $todayOrders,
