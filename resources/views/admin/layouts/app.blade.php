@@ -84,6 +84,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js" integrity="sha512-6rE6Bx6fCBpRXG/FWpQmvguMWDLWMQjPycXMr35Zx/HRD9nwySZswkkLksgyQcvrpYMx0FELLJVBvWFtubZhDQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <!-- Sweet alert js -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@session('success')
+    <script>
+        Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "{{session('success')}}",
+            showConfirmButton: false,
+            timer: 2500
+        });
+    </script>
+@endsession
+@session('error')
+<script>
+    Swal.fire({
+        position: "top-end",
+        icon: "error",
+        title: "{{session('error')}}",
+        showConfirmButton: false,
+        timer: 2500
+    });
+</script>
+@endsession
 <script>
     $(document).ready(function() {
         //datatables

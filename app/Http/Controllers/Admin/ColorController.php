@@ -72,7 +72,7 @@ class ColorController extends Controller
         if ($request->validated()) {
             $color->update($request->validated());
             return redirect()->route('admin.colors.index')->with([
-                'success' => 'Color has been added Successfully'
+                'success' => 'Color has been updated Successfully'
             ]);
         }
     }
