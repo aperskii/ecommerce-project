@@ -45,7 +45,7 @@ class ProductController extends Controller
         //
         if ($request->validated()) {
             $data = $request->all();
-            $date['thumbnail'] = $this->saveImage($request->file('thumbnail'));
+            $data['thumbnail'] = $this->saveImage($request->file('thumbnail'));
             // Check if the admin upload first image
             if($request->has('first_image')){
                 $data['first_image'] = $this->saveImage($request->file('first_image'));
@@ -98,37 +98,37 @@ class ProductController extends Controller
     {
         //
         if ($request->validated()) {
-            $data = $request->all();
+            $data = $request->all(); // remove '_token' and '_method' from request data
             if($request->has('thumbnail')){
                 // remove the old thumbnail
-                $this->removeProductImageFromStorage($request->file('thumbnail'));
+                $this->removeProductImageFromStorage($product->thumbnail);
                 // store new thumbnail
                 $data['thumbnail'] = $this->saveImage($request->file('thumbnail'));
             }
             // Check if the admin upload first image
             if($request->has('first_image')){
                 // remove the old first_image
-                $this->removeProductImageFromStorage($request->file('first_image'));
+                $this->removeProductImageFromStorage($product->first_image);
                 // store new first_image
                 $data['first_image'] = $this->saveImage($request->file('first_image'));
             }
             // Check if the admin second image
             if($request->has('second_image')){
                 // remove the old second image
-                $this->removeProductImageFromStorage($request->file('second_image'));
+                $this->removeProductImageFromStorage($product->second_image);
                 // store new second image
                 $data['second_image'] = $this->saveImage($request->file('second_image'));
             }
             // Check if the admin third image
             if($request->has('third_image')){
                 // remove the old third image
-                $this->removeProductImageFromStorage($request->file('third_image'));
+                $this->removeProductImageFromStorage($product->third_image);
                 // store new third image
                 $data['third_image'] = $this->saveImage($request->file('third_image'));
             }
             // add the slug
             $data['slug'] = Str::slug($request->name);
-            $product->query()->update($data);
+            $product->update($data);
             $product->colors()->sync($request->color_id);
             $product->sizes()->sync($request->size_id);
             return redirect()->route('admin.products.index')->with([
@@ -159,7 +159,7 @@ class ProductController extends Controller
     // Remove products images from storage
     private function removeProductImageFromStorage($file)
     {
-        $path = public_path('storage/images/products/'.$file);
+        $path = public_path($file);
         if (File::exists($path)) {
             File::delete($path);
         }
@@ -168,8 +168,8 @@ class ProductController extends Controller
     // Save images in the storage
     public function saveImage($file)
     {
-        $image_name = time().'_'.$file->getClientOriginalExtension();
+        $image_name = time().'_'.$file->getClientOriginalName();
         $file->storeAs('images/products/', $image_name, 'public');
-        return '/storage/images/products/'.$image_name;
+        return 'storage/images/products/'.$image_name;
     }
 }
