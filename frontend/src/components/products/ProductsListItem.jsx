@@ -38,10 +38,9 @@ export default function ProductsList({product}) {
                         <div className="d-flex justify-content-start align-items-center mb-3">
                             {
                                 product.colors?.map(color => (
-                                    <span key={color.id}>
-                                            <div className='me-1 border border-secondary' key={color.id} style={{ backgroundColor: color.name.toLowerCase(), height: '20px', width: '20px' }}>
-                                            </div>
-                                    </span>
+                                    <div className='me-1 border border-secondary' key={color.id}
+                                         style={{ backgroundColor: color.name.toLowerCase(), height: '20px', width: '20px' }}>
+                                    </div>
                                 ))
                             }
                         </div>

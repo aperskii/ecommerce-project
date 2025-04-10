@@ -5,15 +5,18 @@ import Alert from '../layouts/Alert.jsx'
 import Spinner from '../layouts/Spinner.jsx'
 import { Parser } from 'html-to-react'
 import Slider from './images/Slider.jsx';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../../redux/slices/cartSlice.js';
 
 export default function Product() {
     const [product, setProduct] = useState([])
     const [loading, setLoading] = useState(false)
-    const [selectedColor, setSelectedColor] = useState('')
-    const [selectedSize, setSelectedSize] = useState('')
+    const [selectedColor, setSelectedColor] = useState(null)
+    const [selectedSize, setSelectedSize] = useState(null)
     const [qty, setQty] = useState('1')
     const [error, setError] = useState('')
     const { slug } = useParams()
+    const dispatch = useDispatch()
 
     useEffect(() => {
         const fetchProductBySlug = async () => {
@@ -33,6 +36,17 @@ export default function Product() {
         fetchProductBySlug()
     },[slug])
 
+    const makeUniqueId = (length) => {
+        let result = ''
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+        const charactersLength = characters.length
+        let counter = 0
+        while (counter < length) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength))
+            counter += 1
+        }
+        return result
+    }
 
     return (
         <div className="card my-5">
@@ -64,9 +78,12 @@ export default function Product() {
                                 <div className="d-flex justify-content-start align-items-center mb-3">
                                     {
                                         product.sizes?.map(size => (
-                                            <span key={size.id} className='bg-light text-dark p-1 me-2 fw-bold'>
-                                            <small>{size.name}</small>
-                                        </span>
+                                            <span key={size.id}
+                                                      onClick={() => setSelectedSize(size)}
+                                                      style={{cursor: 'pointer'}}
+                                                      className={`bg-light text-dark p-1 me-2 fw-bold ${selectedSize?.id === size.id ? 'border border-dark-subtle' : ''}`}>
+                                                <small>{size.name}</small>
+                                            </span>
                                         ))
                                     }
                                 </div>
@@ -86,12 +103,44 @@ export default function Product() {
                             <div className="d-flex justify-content-start align-items-center mb-3">
                                 {
                                     product.colors?.map(color => (
-                                        <span key={color.id}>
-                                            <div className='me-1 border border-secondary' key={color.id} style={{ backgroundColor: color.name.toLowerCase(), height: '20px', width: '20px' }}>
-                                            </div>
-                                    </span>
+                                    <div className={`me-1 ${selectedColor?.id === color.id ? 'border border-dark-subtle' : ''}`} key={color.id}
+                                         style={{ backgroundColor: color.name.toLowerCase(), height: '20px', width: '20px', cursor: 'pointer'}}
+                                        onClick={() => setSelectedColor(color)}>
+                                    </div>
                                     ))
                                 }
+                            </div>
+                            <div className="row mt-5">
+                                <div className="col-md-6 mx-auto">
+                                    <div className="mb-4">
+                                        <input className="form-control" type="number" placeholder="Qty" min={1} max={product?.qty > 1 ? product?.qty : 1}
+                                               value={qty} onChange={(e) => setQty(e.target.value)} />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="d-flex justify-content-center">
+                                <button className="btn btn-dark"
+                                        onClick={() => { dispatch(addToCart({
+                                                product_id: product.id,
+                                                ref: makeUniqueId(10),
+                                                name: product.name,
+                                                slug: product.slug,
+                                                qty: parseInt(qty),
+                                                price: parseInt(product.price),
+                                                color: selectedColor.name,
+                                                size: selectedSize.name,
+                                                maxQty: parseInt(product.qty),
+                                                image: product.thumbnail,
+                                                coupon_id: null
+                                        }))
+                                            setSelectedColor(null)
+                                            setSelectedSize(null)
+                                            setQty(1)
+                                        }}
+                                        disabled={!selectedColor || !selectedSize || product?.qty == 0} >
+                                    <i className="bi bi-cart-plus-fill"></i>  {" "}
+                                    Add To Cart
+                                </button>
                             </div>
                         </div>
                     </div>
